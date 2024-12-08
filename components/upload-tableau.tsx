@@ -9,14 +9,14 @@ export function TableauEmbed() {
   useEffect(() => {
     // Dynamically load the Tableau JS API script
     const script = document.createElement('script')
-    // Use the correct Tableau JS API script URL
+    // Correct Tableau JS API script URL
     script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
     script.async = true
 
     // Define the onload handler with debugging statements
     script.onload = () => {
       console.log('Tableau script loaded:', (window as any).tableau)
-      
+
       // Check if the Tableau object is available
       if (!((window as any).tableau)) {
         console.error('Tableau object not found.')
@@ -54,6 +54,7 @@ export function TableauEmbed() {
 
     // Append the script to the document body
     document.body.appendChild(script)
+    console.log('Tableau script appended to document.')
 
     // Cleanup function to dispose of the Tableau Viz instance and remove the script
     return () => {
@@ -91,5 +92,3 @@ export function TableauEmbed() {
     </div>
   )
 }
-
-export default TableauEmbed
