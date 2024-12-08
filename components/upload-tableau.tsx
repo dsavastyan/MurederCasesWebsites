@@ -9,18 +9,31 @@ export function TableauEmbed() {
   useEffect(() => {
     // Dynamically load the Tableau JS API script
     const script = document.createElement('script')
-    script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js' // Corrected URL
+    // Use the correct Tableau JS API script URL
+    script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
     script.async = true
-    script.onload = () => {
-      console.log('Tableau script loaded successfully.')
 
+    // Define the onload handler with debugging statements
+    script.onload = () => {
+      console.log('Tableau script loaded:', (window as any).tableau)
+      
+      // Check if the Tableau object is available
+      if (!((window as any).tableau)) {
+        console.error('Tableau object not found.')
+        return
+      }
+
+      // Initialize Tableau Viz once the script has loaded and tableau object is available
       if (vizRef.current && (window as any).tableau) {
         const options = {
           width: '100%',
           height: '600px',
           hideTabs: true,
           hideToolbar: false,
+          // Additional options can be added here
         }
+
+        // Update the vizUrl to include embedding parameters
         const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1?:embed=y&:display_count=y&:origin=viz_share_link'
 
         try {
@@ -30,17 +43,19 @@ export function TableauEmbed() {
           console.error('Error initializing Tableau Viz:', error)
         }
       } else {
-        console.error('Tableau object not found on window.')
+        console.error('Viz container not found.')
       }
     }
 
+    // Handle script loading errors
     script.onerror = () => {
       console.error('Failed to load Tableau script.')
     }
 
+    // Append the script to the document body
     document.body.appendChild(script)
 
-    // Cleanup the script and viz when the component unmounts
+    // Cleanup function to dispose of the Tableau Viz instance and remove the script
     return () => {
       if (vizInstanceRef.current) {
         vizInstanceRef.current.dispose()
@@ -76,3 +91,5 @@ export function TableauEmbed() {
     </div>
   )
 }
+
+export default TableauEmbed
