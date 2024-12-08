@@ -76,5 +76,3 @@ export function TableauEmbed() {
     </div>
   )
 }
-
-export default TableauEmbed
