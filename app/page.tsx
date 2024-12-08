@@ -1,10 +1,12 @@
+'use client'
+
 import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { UploadSection } from "@/components/upload-section"
-import { TableauEmbed } from "@/components/upload-tableau"
+import { TableauEmbed } from "@/components/upload-tableau" // Named import
 
 export default function Home() {
   return (
@@ -169,7 +171,7 @@ export default function Home() {
         </section>
 
         <section className="py-24 bg-gray-50" id="tableau">
-          <TableauEmbed />
+          <TableauEmbed /> {/* Correctly imported as named import */}
         </section>
 
         <section className="py-24 bg-white" id="contact">
