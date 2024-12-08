@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { UploadSection } from "@/components/upload-section"
+import { TableauEmbed } from "@/components/upload-tableau"
 
 export default function Home() {
   return (
@@ -165,6 +166,10 @@ export default function Home() {
 
         <section className="py-24 bg-gray-50" id="upload">
           <UploadSection />
+        </section>
+
+        <section className="py-24 bg-gray-50" id="tableau">
+          <TableauEmbed />
         </section>
 
         <section className="py-24 bg-white" id="contact">
