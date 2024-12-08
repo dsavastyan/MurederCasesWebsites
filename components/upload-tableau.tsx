@@ -7,7 +7,7 @@ export function TableauEmbed() {
   const vizInstanceRef = useRef<any>(null)
 
   useEffect(() => {
-    // Dynamically load the Tableau JS API script
+    // Dynamically load the Tableau JS API scrip
     const script = document.createElement('script')
     // Correct Tableau JS API script URL
     script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
