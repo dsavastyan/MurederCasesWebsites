@@ -2,69 +2,128 @@
 
 import React, { useEffect, useRef } from 'react'
 
-export function TableauEmbed() {
+// Define the shape of the Tableau Viz instance
+interface TableauViz {
+  dispose: () => void
+  refreshDataAsync: () => Promise<void>
+  // Add other Tableau Viz methods if needed
+}
+
+declare global {
+  interface Window {
+    tableau: any
+  }
+}
+
+export const TableauEmbed: React.FC = () => {
   const vizRef = useRef<HTMLDivElement>(null)
-  const vizInstanceRef = useRef<any>(null)
+  const vizInstanceRef = useRef<TableauViz | null>(null)
 
-  useEffect(() => {
-    // Dynamically load the Tableau JS API scrip
-    const script = document.createElement('script')
-    // Correct Tableau JS API script URL
-    script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
-    script.async = true
-
-    // Define the onload handler with debugging statements
-    script.onload = () => {
-      console.log('Tableau script loaded:', (window as any).tableau)
-
-      // Check if the Tableau object is available
-      if (!((window as any).tableau)) {
-        console.error('Tableau object not found.')
+  // Function to dynamically load the Tableau JS API
+  const loadTableauScript = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (document.getElementById('tableau-api')) {
+        // Script already loaded
+        resolve()
         return
       }
 
-      // Initialize Tableau Viz once the script has loaded and tableau object is available
-      if (vizRef.current && (window as any).tableau) {
-        const options = {
-          width: '100%',
-          height: '600px',
-          hideTabs: true,
-          hideToolbar: false,
-          // Additional options can be added here
-        }
+      const script = document.createElement('script')
+      script.id = 'tableau-api'
+      script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
+      script.async = true
+      script.onload = () => {
+        console.log('Tableau script loaded successfully.')
+        resolve()
+      }
+      script.onerror = () => {
+        console.error('Failed to load Tableau script.')
+        reject(new Error('Failed to load Tableau script.'))
+      }
+      document.body.appendChild(script)
+    })
+  }
 
-        // Update the vizUrl to include embedding parameters
-        const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1?:embed=y&:display_count=y&:origin=viz_share_link'
-
-        try {
-          vizInstanceRef.current = new (window as any).tableau.Viz(vizRef.current, vizUrl, options)
+  // Function to initialize the Tableau Viz
+  const initializeViz = () => {
+    if (vizRef.current && window.tableau) {
+      const containerDiv = vizRef.current
+      const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1'
+      const options = {
+        width: containerDiv.offsetWidth,
+        height: getVizHeight(containerDiv.offsetWidth),
+        hideTabs: true,
+        hideToolbar: false,
+        onFirstInteractive: () => {
           console.log('Tableau Viz initialized successfully.')
-        } catch (error) {
-          console.error('Error initializing Tableau Viz:', error)
-        }
-      } else {
-        console.error('Viz container not found.')
+        },
+      }
+
+      try {
+        vizInstanceRef.current = new window.tableau.Viz(containerDiv, vizUrl, options)
+      } catch (error) {
+        console.error('Error initializing Tableau Viz:', error)
+      }
+    } else {
+      console.error('Tableau object not found on window.')
+    }
+  }
+
+  // Function to calculate visualization height based on width
+  const getVizHeight = (width: number): number => {
+    if (width > 800) {
+      return 795
+    } else if (width > 500) {
+      return 795
+    } else {
+      return 1877
+    }
+  }
+
+  // Function to resize the Tableau Viz
+  const resizeViz = () => {
+    if (vizInstanceRef.current) {
+      const containerDiv = vizRef.current
+      if (containerDiv) {
+        const newWidth = containerDiv.offsetWidth
+        const newHeight = getVizHeight(newWidth)
+        vizInstanceRef.current.dispose()
+        initializeViz()
       }
     }
+  }
 
-    // Handle script loading errors
-    script.onerror = () => {
-      console.error('Failed to load Tableau script.')
-    }
+  useEffect(() => {
+    let isMounted = true
 
-    // Append the script to the document body
-    document.body.appendChild(script)
-    console.log('Tableau script appended to document.')
+    loadTableauScript()
+      .then(() => {
+        if (isMounted) {
+          initializeViz()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
 
-    // Cleanup function to dispose of the Tableau Viz instance and remove the script
+    // Add event listener for window resize
+    window.addEventListener('resize', resizeViz)
+
+    // Cleanup function
     return () => {
+      isMounted = false
       if (vizInstanceRef.current) {
         vizInstanceRef.current.dispose()
         console.log('Tableau Viz disposed.')
       }
-      document.body.removeChild(script)
-      console.log('Tableau script removed.')
+      window.removeEventListener('resize', resizeViz)
+      const script = document.getElementById('tableau-api')
+      if (script && document.body.contains(script)) {
+        document.body.removeChild(script)
+        console.log('Tableau script removed.')
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
