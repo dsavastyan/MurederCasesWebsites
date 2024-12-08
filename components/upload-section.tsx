@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 
 export function UploadSection() {
-  const [fileName, setFileName] = useState('Перетащите файл сюда или выберите файл для загрузки')
+  const [fileName, setFileName] = useState('Drag and drop a file here or select a file to upload')
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    setFileName(file ? `Выбран файл: ${file.name}` : 'Файл не выбран')
+    setFileName(file ? `File selected: ${file.name}` : 'No file selected')
   }
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -25,7 +25,7 @@ export function UploadSection() {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     const file = event.dataTransfer.files[0]
-    setFileName(file ? `Выбран файл: ${file.name}` : 'Файл не выбран')
+    setFileName(file ? `File selected: ${file.name}` : 'No file selected')
     event.currentTarget.style.backgroundColor = '#f5f5f5'
     event.currentTarget.style.borderColor = '#00bcd4'
   }
@@ -33,10 +33,10 @@ export function UploadSection() {
   return (
     <div className="container">
       <div className="max-w-md mx-auto bg-white rounded-2xl p-10 shadow-lg text-center transform hover:scale-105 transition-all duration-300 ease-in-out hover:shadow-xl">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Загрузите файл</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Upload a File</h2>
         <form action="/upload" method="POST" encType="multipart/form-data">
           <label htmlFor="file" className="block text-lg text-gray-700 mb-3">
-            Выберите файл:
+            Select a file:
           </label>
           
           <div 
@@ -61,17 +61,17 @@ export function UploadSection() {
             className="w-full bg-[#00bcd4] text-white mt-3 hover:bg-[#8e24aa]"
             onClick={() => document.getElementById('file')?.click()}
           >
-            Выбрать файл с компьютера
+            Choose a file from your computer
           </Button>
           
           <Button 
             type="submit" 
             className="w-full bg-[#00bcd4] text-white mt-3 hover:bg-[#8e24aa]"
           >
-            Загрузить
+            Upload
           </Button>
         </form>
-        <div className="mt-5 text-sm text-gray-500">© 2024 Ваш сайт</div>
+        <div className="mt-5 text-sm text-gray-500">© 2024 Your Website</div>
       </div>
     </div>
   )
