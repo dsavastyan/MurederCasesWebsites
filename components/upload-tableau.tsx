@@ -21,7 +21,7 @@ export function TableauEmbed() {
           hideTabs: true,
           hideToolbar: false,
         }
-        const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1'
+        const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1?:embed=y&:display_count=y&:origin=viz_share_link'
 
         try {
           vizInstanceRef.current = new (window as any).tableau.Viz(vizRef.current, vizUrl, options)
