@@ -1,19 +1,20 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 export function TableauEmbed() {
+  const vizRef = useRef<HTMLDivElement>(null)
+  const vizInstanceRef = useRef<any>(null)
+
   useEffect(() => {
     // Dynamically load the Tableau JS API script
     const script = document.createElement('script')
-    script.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'
+    script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js' // Corrected URL
     script.async = true
-    document.body.appendChild(script)
-
     script.onload = () => {
-      // Initialize Tableau Viz once the script has loaded
-      const vizDiv = document.getElementById('tableauViz') as HTMLDivElement
-      if (vizDiv && (window as any).tableau) {
+      console.log('Tableau script loaded successfully.')
+
+      if (vizRef.current && (window as any).tableau) {
         const options = {
           width: '100%',
           height: '600px',
@@ -22,13 +23,31 @@ export function TableauEmbed() {
         }
         const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1'
 
-        new (window as any).tableau.Viz(vizDiv, vizUrl, options)
+        try {
+          vizInstanceRef.current = new (window as any).tableau.Viz(vizRef.current, vizUrl, options)
+          console.log('Tableau Viz initialized successfully.')
+        } catch (error) {
+          console.error('Error initializing Tableau Viz:', error)
+        }
+      } else {
+        console.error('Tableau object not found on window.')
       }
     }
 
-    // Cleanup the script when the component unmounts
+    script.onerror = () => {
+      console.error('Failed to load Tableau script.')
+    }
+
+    document.body.appendChild(script)
+
+    // Cleanup the script and viz when the component unmounts
     return () => {
+      if (vizInstanceRef.current) {
+        vizInstanceRef.current.dispose()
+        console.log('Tableau Viz disposed.')
+      }
       document.body.removeChild(script)
+      console.log('Tableau script removed.')
     }
   }, [])
 
@@ -38,7 +57,7 @@ export function TableauEmbed() {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Tableau Dashboard</h2>
         {/* Tableau Embed Container */}
         <div
-          id="tableauViz"
+          ref={vizRef}
           style={{ width: '100%', height: '600px', position: 'relative' }}
           className="mb-6"
         >
