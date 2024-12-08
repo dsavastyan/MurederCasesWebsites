@@ -24,7 +24,7 @@ export function SiteHeader() {
           <Link href="#upload" className="text-sm font-medium">
             Upload
           </Link>
-          <Button variant="outlinee" className="border-2">
+          <Button variant="outline" className="border-2">
             CONTACT
           </Button>
         </nav>
