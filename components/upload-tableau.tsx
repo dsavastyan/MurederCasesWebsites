@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 // Define the shape of the Tableau Viz instance
 interface TableauViz {
@@ -18,8 +18,9 @@ declare global {
 export const TableauEmbed: React.FC = () => {
   const vizRef = useRef<HTMLDivElement>(null)
   const vizInstanceRef = useRef<TableauViz | null>(null)
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false)
 
-  // Function to dynamically load the Tableau JS API
+  // Load the Tableau JS API script dynamically
   const loadTableauScript = (): Promise<void> => {
     return new Promise((resolve, reject) => {
       if (document.getElementById('tableau-api')) {
@@ -33,6 +34,7 @@ export const TableauEmbed: React.FC = () => {
       script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
       script.async = true
       script.onload = () => {
+        setIsScriptLoaded(true)
         console.log('Tableau script loaded successfully.')
         resolve()
       }
@@ -51,7 +53,7 @@ export const TableauEmbed: React.FC = () => {
       const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1'
       const options = {
         width: containerDiv.offsetWidth,
-        height: getVizHeight(containerDiv.offsetWidth),
+        height: calculateVizHeight(containerDiv.offsetWidth),
         hideTabs: true,
         hideToolbar: false,
         onFirstInteractive: () => {
@@ -60,6 +62,7 @@ export const TableauEmbed: React.FC = () => {
       }
 
       try {
+        // Create Tableau Viz instance
         vizInstanceRef.current = new window.tableau.Viz(containerDiv, vizUrl, options)
       } catch (error) {
         console.error('Error initializing Tableau Viz:', error)
@@ -69,36 +72,36 @@ export const TableauEmbed: React.FC = () => {
     }
   }
 
-  // Function to calculate visualization height based on width
-  const getVizHeight = (width: number): number => {
+  // Calculate visualization height based on the container width
+  const calculateVizHeight = (width: number): number => {
     if (width > 800) {
       return 795
     } else if (width > 500) {
-      return 795
+      return 600
     } else {
-      return 1877
+      return 400
     }
   }
 
   // Function to resize the Tableau Viz
   const resizeViz = () => {
-    if (vizInstanceRef.current) {
-      const containerDiv = vizRef.current
-      if (containerDiv) {
-        const newWidth = containerDiv.offsetWidth
-        const newHeight = getVizHeight(newWidth)
-        vizInstanceRef.current.dispose()
-        initializeViz()
-      }
+    if (vizInstanceRef.current && vizRef.current) {
+      const newWidth = vizRef.current.offsetWidth
+      const newHeight = calculateVizHeight(newWidth)
+
+      // Dispose and reinitialize Viz to apply new dimensions
+      vizInstanceRef.current.dispose()
+      initializeViz()
     }
   }
 
+  // Load the script and initialize the Viz once the component is mounted
   useEffect(() => {
     let isMounted = true
 
     loadTableauScript()
       .then(() => {
-        if (isMounted) {
+        if (isMounted && isScriptLoaded) {
           initializeViz()
         }
       })
@@ -106,10 +109,10 @@ export const TableauEmbed: React.FC = () => {
         console.error(error)
       })
 
-    // Add event listener for window resize
+    // Add event listener for window resize to adjust the Viz size
     window.addEventListener('resize', resizeViz)
 
-    // Cleanup function
+    // Cleanup the script and Tableau instance when the component is unmounted
     return () => {
       isMounted = false
       if (vizInstanceRef.current) {
@@ -123,9 +126,7 @@ export const TableauEmbed: React.FC = () => {
         console.log('Tableau script removed.')
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+  }, [isScriptLoaded]) // Dependency on isScriptLoaded
   return (
     <div className="container">
       <div className="max-w-4xl mx-auto bg-white rounded-2xl p-10 shadow-lg text-center transform hover:scale-105 transition-all duration-300 ease-in-out hover:shadow-xl">
