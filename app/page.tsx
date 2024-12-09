@@ -8,12 +8,6 @@ import Link from "next/link"
 import { UploadSection } from "@/components/upload-section"
 import { TableauEmbed } from "@/components/upload-tableau" // Named import
 
-export default function Page() {
-  return (
-    <>
-      <section className="py-24 bg-gray-50" id="tableau">
-        <TableauEmbed />
-      </section>
       
 export default function Home() {
   return (
@@ -176,8 +170,12 @@ export default function Home() {
         <section className="py-24 bg-gray-50" id="upload">
           <UploadSection />
         </section>
+            
+        <section className="py-24 bg-gray-50" id="tableau">
+        <TableauEmbed />
+      </section>
 
-          <section className="py-24 bg-white" id="contact">
+      <section className="py-24 bg-white" id="contact">
         <div className="container text-center">
           <div className="text-green-600 font-medium mb-4">GET IN TOUCH</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-8">
@@ -188,7 +186,7 @@ export default function Home() {
           </Button>
         </div>
       </section>
-
+        
         <section className="py-24 bg-white" id="contact">
           <div className="container text-center">
             <div className="text-green-600 font-medium mb-4">GET IN TOUCH</div>
