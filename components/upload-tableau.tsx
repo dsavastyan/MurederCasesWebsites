@@ -30,7 +30,7 @@ export const TableauEmbed: React.FC = () => {
 
       const script = document.createElement('script')
       script.id = 'tableau-api'
-      script.src = 'https://public.tableau.com/javascripts/api/tableau-2.min.js'
+      script.src = 'https://public.tableau.com/javascripts/api/tableau-2.9.2.min.js' // Updated version
       script.async = true
       script.onload = () => {
         setIsScriptLoaded(true)
@@ -61,11 +61,17 @@ export const TableauEmbed: React.FC = () => {
       }
 
       try {
-        // Create Tableau Viz instance
-        vizInstanceRef.current = new window.tableau.Viz(containerDiv, vizUrl, options)
+        // Check if Tableau.Viz is a valid constructor
+        if (window.tableau.Viz) {
+          vizInstanceRef.current = new window.tableau.Viz(containerDiv, vizUrl, options)
+        } else {
+          console.error('Tableau.Viz is not available.')
+        }
       } catch (error) {
         console.error('Error initializing Tableau Viz:', error)
       }
+    } else {
+      console.error('Tableau script is not loaded or object not found.')
     }
   }
 
@@ -80,27 +86,17 @@ export const TableauEmbed: React.FC = () => {
     }
   }
 
-  // Handle effect for loading the Tableau script and initializing the Viz
+  // Load the Tableau script when the component is mounted
   useEffect(() => {
-    loadTableauScript()
-      .then(() => {
-        initializeViz()
-      })
-      .catch((error) => {
-        console.error('Error loading Tableau script:', error)
-      })
-
-    // Cleanup when the component is unmounted
-    return () => {
-      if (vizInstanceRef.current) {
-        vizInstanceRef.current.dispose()
-      }
-    }
-  }, [isScriptLoaded]) // Dependency array to run after script loads
+    loadTableauScript().then(initializeViz).catch((error) => console.error(error))
+  }, [isScriptLoaded]) // This effect should run when script is loaded
 
   return (
-    <div>
-      <div ref={vizRef} style={{ width: '100%', height: '500px' }}></div>
+    <div
+      ref={vizRef}
+      style={{ width: '100%', height: '600px' }} // Ensure there's a container with a defined height/width
+    >
+      {/* Tableau viz will be embedded here */}
     </div>
   )
 }
