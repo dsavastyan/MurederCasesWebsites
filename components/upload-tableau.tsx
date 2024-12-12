@@ -19,10 +19,11 @@ export const TableauEmbed: React.FC = () => {
   const vizInstanceRef = useRef<TableauViz | null>(null)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
 
-  // Load the Tableau JS API script dynamically
+  // Function to load the Tableau JS API script
   const loadTableauScript = (): Promise<void> => {
     return new Promise((resolve, reject) => {
-      if (document.getElementById('tableau-api')) {
+      if (window.tableau && window.tableau.Viz) {
+        setIsScriptLoaded(true) // Tableau script is already loaded
         resolve()
         return
       }
@@ -65,8 +66,6 @@ export const TableauEmbed: React.FC = () => {
       } catch (error) {
         console.error('Error initializing Tableau Viz:', error)
       }
-    } else {
-      console.error('Tableau object not found on window or script not loaded.')
     }
   }
 
@@ -81,34 +80,27 @@ export const TableauEmbed: React.FC = () => {
     }
   }
 
-  // Function to resize the Tableau Viz
-  const resizeViz = () => {
-    if (vizInstanceRef.current) {
-      const containerDiv = vizRef.current
-      const options = {
-        width: containerDiv?.offsetWidth ?? 0,
-        height: calculateVizHeight(containerDiv?.offsetWidth ?? 0),
-      }
-      vizInstanceRef.current.dispose() // Dispose of the old viz
-      vizInstanceRef.current = new window.tableau.Viz(containerDiv!, 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1', options)
-    }
-  }
-
-  // Effect to load Tableau script and initialize the viz
+  // Handle effect for loading the Tableau script and initializing the Viz
   useEffect(() => {
-    loadTableauScript().then(() => {
-      initializeViz()
-    })
-    window.addEventListener('resize', resizeViz)
-    
-    // Cleanup on unmount
+    loadTableauScript()
+      .then(() => {
+        initializeViz()
+      })
+      .catch((error) => {
+        console.error('Error loading Tableau script:', error)
+      })
+
+    // Cleanup when the component is unmounted
     return () => {
       if (vizInstanceRef.current) {
         vizInstanceRef.current.dispose()
       }
-      window.removeEventListener('resize', resizeViz)
     }
-  }, [isScriptLoaded])
+  }, [isScriptLoaded]) // Dependency array to run after script loads
 
-  return <div ref={vizRef} style={{ width: '100%', height: '100%' }} />
+  return (
+    <div>
+      <div ref={vizRef} style={{ width: '100%', height: '500px' }}></div>
+    </div>
+  )
 }
