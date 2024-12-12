@@ -1,4 +1,3 @@
-// model.js
 const MistralClient = require('../lib/MistralClient');
 
 (async () => {
@@ -27,11 +26,11 @@ const MistralClient = require('../lib/MistralClient');
   const responses = {};
 
   for (const question of questions) {
-    // Build the messages array as per MistralClient requirements
+    // Send the entire text without slicing
     const messages = [
       {
         role: "user",
-        content: `Текст: ${text.slice(0, 500)}...\nВопрос: ${question}`
+        content: `Текст: ${text}\nВопрос: ${question}`
       }
     ];
 
