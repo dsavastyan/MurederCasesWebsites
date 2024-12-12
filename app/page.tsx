@@ -8,6 +8,8 @@ import Link from "next/link"
 import { UploadSection } from "@/components/upload-section"
 import { TableauEmbed } from "@/components/upload-tableau" // Named import
 
+export const maxDuration = 60
+
 export default function Home() {
   return (
     <>
