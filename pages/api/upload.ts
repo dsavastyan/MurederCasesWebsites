@@ -1,90 +1,78 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { spawn } from 'child_process';
+import type { NextApiRequest, NextApiResponse } from 'next'
+import nextConnect from 'next-connect'
+import multer from 'multer'
+import MistralClient from '@/lib/MistralClient' // Adjust the import path if needed
 
-// Configure multer for file uploads
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: './uploads',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
-    },
-  }),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit
-});
+// Use in-memory storage instead of disk
+const upload = multer({ storage: multer.memoryStorage() })
 
-const apiRoute = nextConnect({
-  onError(error, req: NextApiRequest, res: NextApiResponse) {
-    console.error(error);
-    res.status(501).json({ error: `Something went wrong! ${error.message}` });
+const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
+  onError(error, req, res) {
+    console.error(error)
+    res.status(500).json({ error: 'Internal Server Error' })
   },
-  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+  onNoMatch(req, res) {
+    res.status(405).json({ error: `Method '${req.method}' Not Allowed` })
   },
-});
+})
 
-apiRoute.use(upload.single('file'));
+apiRoute.use(upload.single('file'))
 
-apiRoute.post(async (req: NextApiRequest & { file?: Express.Multer.File }, res: NextApiResponse) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
-  }
-
-  const filePath = path.join(process.cwd(), 'uploads', req.file.filename);
-
+apiRoute.post(async (req: any, res: NextApiResponse) => {
   try {
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const scriptPath = path.join(process.cwd(), 'scripts', 'model.py');
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' })
+    }
 
-    const pythonProcess = spawn('python3', [scriptPath, fileContent], {
-      env: { ...process.env },
-    });
+    // Convert file buffer to string
+    const fileContent = req.file.buffer.toString('utf-8')
 
-    let pythonOutput = '';
-    let pythonError = '';
+    const apiKey = process.env.MISTRAL_API_KEY
+    if (!apiKey) {
+      console.error('MISTRAL_API_KEY not set')
+      return res.status(500).json({ message: 'Missing API key' })
+    }
 
-    pythonProcess.stdout.on('data', (data) => {
-      pythonOutput += data.toString();
-    });
+    const client = new MistralClient(apiKey)
+    const questions = [
+      "Пол жертвы?",
+      "Пол преступника?",
+      "Дата происшествия?",
+      "Город происшествия?"
+    ]
 
-    pythonProcess.stderr.on('data', (data) => {
-      pythonError += data.toString();
-    });
-
-    pythonProcess.on('close', (code) => {
-      // Delete the uploaded file after processing
-      fs.unlinkSync(filePath);
-
-      if (code === 0) {
-        try {
-          const parsedOutput = JSON.parse(pythonOutput);
-          res.status(200).json({
-            message: 'File successfully processed!',
-            modelResponse: parsedOutput,
-          });
-        } catch (parseError) {
-          console.error('JSON Parse Error:', parseError);
-          res.status(500).json({ message: 'Error parsing model response' });
+    const responses: Record<string, string> = {}
+    for (const question of questions) {
+      const messages = [
+        {
+          role: "user",
+          content: `Текст: ${fileContent.slice(0, 500)}...\nВопрос: ${question}`
         }
-      } else {
-        console.error(`Python script exited with code ${code}: ${pythonError}`);
-        res.status(500).json({ message: 'Error processing the file with the model' });
+      ]
+
+      // Call the Mistral API via client
+      const chatResponse = await client.chat({ model: "mistral-large-latest", messages })
+      const answer = chatResponse.choices?.[0]?.message?.content?.trim()
+      if (!answer) {
+        throw new Error(`No answer returned for question: ${question}`)
       }
-    });
-  } catch (error) {
-    console.error('Server Error:', error);
-    res.status(500).json({ message: 'Server encountered an error' });
+      responses[question] = answer
+    }
+
+    res.status(200).json({
+      message: 'File successfully processed!',
+      modelResponse: responses,
+    })
+  } catch (error: any) {
+    console.error('Error in upload route:', error.message)
+    res.status(500).json({ message: 'An unexpected error occurred.' })
   }
-});
+})
 
 export const config = {
   api: {
     bodyParser: false,
   },
-};
+}
 
-export default apiRoute;
+export default apiRoute
