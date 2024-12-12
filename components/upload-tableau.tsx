@@ -49,7 +49,7 @@ export const TableauEmbed: React.FC = () => {
   const initializeViz = () => {
     if (vizRef.current && window.tableau && isScriptLoaded) {
       const containerDiv = vizRef.current
-      const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1'
+      const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link'
       const options = {
         width: containerDiv.offsetWidth,
         height: calculateVizHeight(containerDiv.offsetWidth),
