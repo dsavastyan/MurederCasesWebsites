@@ -6,7 +6,6 @@ import React, { useEffect, useRef, useState } from 'react'
 interface TableauViz {
   dispose: () => void
   refreshDataAsync: () => Promise<void>
-  // Add other Tableau Viz methods if needed
 }
 
 declare global {
@@ -24,7 +23,6 @@ export const TableauEmbed: React.FC = () => {
   const loadTableauScript = (): Promise<void> => {
     return new Promise((resolve, reject) => {
       if (document.getElementById('tableau-api')) {
-        // Script already loaded
         resolve()
         return
       }
@@ -48,7 +46,7 @@ export const TableauEmbed: React.FC = () => {
 
   // Function to initialize the Tableau Viz
   const initializeViz = () => {
-    if (vizRef.current && window.tableau) {
+    if (vizRef.current && window.tableau && isScriptLoaded) {
       const containerDiv = vizRef.current
       const vizUrl = 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1'
       const options = {
@@ -68,7 +66,7 @@ export const TableauEmbed: React.FC = () => {
         console.error('Error initializing Tableau Viz:', error)
       }
     } else {
-      console.error('Tableau object not found on window.')
+      console.error('Tableau object not found on window or script not loaded.')
     }
   }
 
@@ -87,29 +85,28 @@ export const TableauEmbed: React.FC = () => {
   const resizeViz = () => {
     if (vizInstanceRef.current) {
       const containerDiv = vizRef.current
-      const width = containerDiv?.offsetWidth || 0
-      const height = calculateVizHeight(width)
-      vizInstanceRef.current?.refreshDataAsync().then(() => {
-        vizInstanceRef.current?.dispose()
-        initializeViz()
-      })
+      const options = {
+        width: containerDiv?.offsetWidth ?? 0,
+        height: calculateVizHeight(containerDiv?.offsetWidth ?? 0),
+      }
+      vizInstanceRef.current.dispose() // Dispose of the old viz
+      vizInstanceRef.current = new window.tableau.Viz(containerDiv!, 'https://public.tableau.com/views/CourseProjectCourtStatistics2023/Dashboard1', options)
     }
   }
 
-  // Load the Tableau script and initialize the Viz when script is loaded
+  // Effect to load Tableau script and initialize the viz
   useEffect(() => {
-    loadTableauScript()
-      .then(() => {
-        initializeViz()
-      })
-      .catch((error) => console.error('Error loading Tableau script:', error))
-
-    // Resize the Tableau Viz on window resize
+    loadTableauScript().then(() => {
+      initializeViz()
+    })
     window.addEventListener('resize', resizeViz)
-
+    
+    // Cleanup on unmount
     return () => {
+      if (vizInstanceRef.current) {
+        vizInstanceRef.current.dispose()
+      }
       window.removeEventListener('resize', resizeViz)
-      vizInstanceRef.current?.dispose()
     }
   }, [isScriptLoaded])
 
