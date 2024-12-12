@@ -1,6 +1,6 @@
 // model.js
 require('dotenv').config(); // For local development; not needed on Vercel if env vars are set in the dashboard
-const MistralClient = require('./MistralClient'); // Adjust this import path to where you place your MistralClient code
+const MistralClient = require('../lib/MistralClient');
 
 (async () => {
   const text = process.argv[2];
