@@ -53,7 +53,7 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
       const messages = [
         {
           role: "user",
-          content: `Текст: ${fileContent.slice(0, 500)}...\nВопрос: ${question}`
+          content: `Текст: ${fileContent}...\nВопрос: ${question}`
         }
       ]
 
