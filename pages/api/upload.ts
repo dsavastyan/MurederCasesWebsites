@@ -13,7 +13,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   },
   onNoMatch(req, res) {
     console.log('onNoMatch handler triggered: Method not allowed:', req.method)
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` })
+    res.status(405).json({ error: Method '${req.method}' Not Allowed })
   },
 })
 
@@ -49,11 +49,11 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
     console.log('Processing questions:', questions)
     const responses: Record<string, string> = {}
     for (const question of questions) {
-      console.log(`Asking question: ${question}`)
+      console.log(Asking question: ${question})
       const messages = [
         {
           role: "user",
-          content: `Текст: ${fileContent}...\nВопрос: ${question}`
+          content: Текст: ${fileContent.slice(0, 500)}...\nВопрос: ${question}
         }
       ]
 
@@ -65,8 +65,8 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
       console.log('Extracted answer:', answer)
 
       if (!answer) {
-        console.error(`No answer returned for question: ${question}`)
-        throw new Error(`No answer returned for question: ${question}`)
+        console.error(No answer returned for question: ${question})
+        throw new Error(No answer returned for question: ${question})
       }
       responses[question] = answer
     }
