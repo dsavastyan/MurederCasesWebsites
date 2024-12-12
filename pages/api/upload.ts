@@ -40,10 +40,11 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
     console.log('Instantiating MistralClient...')
     const client = new MistralClient(apiKey)
     const questions = [
-      "Пол жертвы?",
-      "Пол преступника?",
-      "Дата происшествия?",
-      "Город происшествия?"
+      "Sex of the victim?",
+      "Sex of the offender?",
+      "Date of the offence?",
+      "City of the offence?",
+      "Weapon"
     ]
 
     console.log('Processing questions:', questions)
