@@ -85,70 +85,33 @@ export const TableauEmbed: React.FC = () => {
 
   // Function to resize the Tableau Viz
   const resizeViz = () => {
-    if (vizInstanceRef.current && vizRef.current) {
-      const newWidth = vizRef.current.offsetWidth
-      const newHeight = calculateVizHeight(newWidth)
-
-      // Dispose and reinitialize Viz to apply new dimensions
-      vizInstanceRef.current.dispose()
-      initializeViz()
+    if (vizInstanceRef.current) {
+      const containerDiv = vizRef.current
+      const width = containerDiv?.offsetWidth || 0
+      const height = calculateVizHeight(width)
+      vizInstanceRef.current?.refreshDataAsync().then(() => {
+        vizInstanceRef.current?.dispose()
+        initializeViz()
+      })
     }
   }
 
-  // Load the script and initialize the Viz once the component is mounted
+  // Load the Tableau script and initialize the Viz when script is loaded
   useEffect(() => {
-    let isMounted = true
-
     loadTableauScript()
       .then(() => {
-        if (isMounted && isScriptLoaded) {
-          initializeViz()
-        }
+        initializeViz()
       })
-      .catch((error) => {
-        console.error(error)
-      })
+      .catch((error) => console.error('Error loading Tableau script:', error))
 
-    // Add event listener for window resize to adjust the Viz size
+    // Resize the Tableau Viz on window resize
     window.addEventListener('resize', resizeViz)
 
-    // Cleanup the script and Tableau instance when the component is unmounted
     return () => {
-      isMounted = false
-      if (vizInstanceRef.current) {
-        vizInstanceRef.current.dispose()
-        console.log('Tableau Viz disposed.')
-      }
       window.removeEventListener('resize', resizeViz)
-      const script = document.getElementById('tableau-api')
-      if (script && document.body.contains(script)) {
-        document.body.removeChild(script)
-        console.log('Tableau script removed.')
-      }
+      vizInstanceRef.current?.dispose()
     }
-  }, [isScriptLoaded]) // Dependency on isScriptLoaded
-  return (
-    <div className="container">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl p-10 shadow-lg text-center transform hover:scale-105 transition-all duration-300 ease-in-out hover:shadow-xl">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Tableau Dashboard</h2>
-        {/* Tableau Embed Container */}
-        <div
-          ref={vizRef}
-          style={{ width: '100%', height: '600px', position: 'relative' }}
-          className="mb-6"
-        >
-          <noscript>
-            <a href="#">
-              <img
-                alt="Dashboard 1"
-                src="https://public.tableau.com/static/images/Co/CourseProjectCourtStatistics2023/Dashboard1/1_rss.png"
-                style={{ border: 'none' }}
-              />
-            </a>
-          </noscript>
-        </div>
-        <div className="mt-5 text-sm text-gray-500">© 2024 Your Website</div>
-      </div>
-    </div>
-  )
+  }, [isScriptLoaded])
+
+  return <div ref={vizRef} style={{ width: '100%', height: '100%' }} />
 }
