@@ -8,12 +8,12 @@ import Link from "next/link"
 import { UploadSection } from "@/components/upload-section"
 import { TableauEmbed } from "@/components/upload-tableau" // Named import
 
-      
 export default function Home() {
   return (
     <>
       <SiteHeader />
       <main>
+        {/* Home Section */}
         <section className="relative h-screen" id="home">
           <div 
             className="absolute inset-0 bg-cover bg-center"
@@ -33,6 +33,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* About Section */}
         <section className="py-24 bg-white" id="about">
           <div className="container">
             <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -63,6 +64,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Services Section */}
         <section className="py-24 bg-gray-50" id="services">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
@@ -139,6 +141,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* How It Works Section */}
         <section className="py-24 bg-white" id="how-it-works">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
@@ -167,25 +170,28 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Upload Section */}
         <section className="py-24 bg-gray-50" id="upload">
           <UploadSection />
         </section>
             
+        {/* Tableau Section */}
         <section className="py-24 bg-gray-50" id="tableau">
-        <TableauEmbed />
-      </section>
+          <TableauEmbed />
+        </section>
 
-      <section className="py-24 bg-white" id="contact">
-        <div className="container text-center">
-          <div className="text-green-600 font-medium mb-4">GET IN TOUCH</div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-8">
-            We are here to assist you with your inquiries.
-          </h2>
-          <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
-            Contact Us
-          </Button>
-        </div>
-      </section>
+        {/* Contact Section (Single Instance) */}
+        <section className="py-24 bg-white" id="contact">
+          <div className="container text-center">
+            <div className="text-green-600 font-medium mb-4">GET IN TOUCH</div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">
+              We are here to assist you with your inquiries.
+            </h2>
+            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
+              Contact Us
+            </Button>
+          </div>
+        </section>
       </main>
     </>
   )
