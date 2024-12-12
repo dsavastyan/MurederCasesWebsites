@@ -186,18 +186,6 @@ export default function Home() {
           </Button>
         </div>
       </section>
-        
-        <section className="py-24 bg-white" id="contact">
-          <div className="container text-center">
-            <div className="text-green-600 font-medium mb-4">GET IN TOUCH</div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">
-              We are here to assist you with your inquiries.
-            </h2>
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
-              Contact Us
-            </Button>
-          </div>
-        </section>
       </main>
     </>
   )
