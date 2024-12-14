@@ -48,8 +48,10 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
       "Оружие? (ответь только название оружия, если указано, без лишних слов)",
     ];
 
-    // Create a mapping of displayed questions (without brackets) and original questions
-    const displayQuestions = questions.map((q) => q.replace(/\(.*?\)/g, "").trim());
+    // Create a mapping of displayed questions by removing text in brackets and "?"
+    const displayQuestions = questions.map((q) =>
+      q.replace(/\(.*?\)/g, "").replace(/\?/g, "").trim()
+    );
     const responses: Record<string, string> = {};
 
     console.log("Processing questions:", questions);
