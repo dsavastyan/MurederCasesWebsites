@@ -172,7 +172,6 @@ export function UploadSection() {
           </div>
         )}
 
-        <div className="mt-5 text-sm text-gray-500">© 2024 Ваш Сайт</div>
       </div>
     </div>
   );
