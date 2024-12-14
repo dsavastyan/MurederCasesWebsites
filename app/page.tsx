@@ -182,6 +182,58 @@ export default function Home() {
           <TableauEmbed />
         </section>
 
+        {/* Подписка Section */}
+<section className="py-24 bg-gray-50" id="subscription">
+  <div className="container">
+    <div className="text-center max-w-3xl mx-auto mb-16">
+      <div className="text-green-600 font-medium mb-4">ПОДПИСКА</div>
+      <h2 className="text-3xl md:text-4xl font-bold">
+        Выберите подходящий тариф
+      </h2>
+    </div>
+
+    <div className="grid md:grid-cols-2 gap-8">
+      {/* Premium Tier */}
+      <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        <h3 className="text-xl font-bold text-green-600 mb-4">
+          Премиум
+        </h3>
+        <p className="text-gray-600 mb-4">
+          <strong>Стоимость:</strong> 2500₽ в месяц или 25000₽ в год (со скидкой).
+        </p>
+        <ul className="text-gray-600 space-y-2 mb-4">
+          <li>Все функции базового тарифа.</li>
+          <li>Улучшенные аналитические инструменты, включая статистические анализы и визуализацию трендов данных.</li>
+          <li>Дополнительные образовательные материалы (вебинары, кейс-стадии по результатам судебных дел).</li>
+          <li>Приоритетная техническая поддержка.</li>
+        </ul>
+        <Button className="w-full bg-green-600 text-white hover:bg-green-700">
+          Оформить подписку
+        </Button>
+      </div>
+
+      {/* Professional Tier */}
+      <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        <h3 className="text-xl font-bold text-green-600 mb-4">
+          Профессионал
+        </h3>
+        <p className="text-gray-600 mb-4">
+          <strong>Стоимость:</strong> 5000₽ в месяц или 50000₽ в год (со скидкой).
+        </p>
+        <ul className="text-gray-600 space-y-2 mb-4">
+          <li>Все функции премиум тарифа.</li>
+          <li>Анализ пользовательских данных с генерацией индивидуальных отчетов.</li>
+          <li>Приоритетный доступ к новым функциям и релизам.</li>
+          <li>Индивидуальные консультации с юридическими экспертами или дата-сайентистами.</li>
+        </ul>
+        <Button className="w-full bg-green-600 text-white hover:bg-green-700">
+          Оформить подписку
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
         {/* Секция контактов */}
         <section className="py-24 bg-white" id="contact">
           <div className="container text-center">
