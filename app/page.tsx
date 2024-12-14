@@ -25,7 +25,7 @@ export default function Home() {
           </div>
           <div className="relative container h-full flex flex-col items-center justify-center text-center text-white">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
-              Разблокируем правосудие
+              Ключ к правосудию
             </h1>
             <p className="text-xl md:text-2xl text-white/90">
               Эффективно анализируйте уголовные дела
@@ -40,13 +40,13 @@ export default function Home() {
               <div className="space-y-6">
                 <div className="text-green-600 font-medium">АНАЛИЗ УГОЛОВНЫХ ДЕЛ</div>
                 <h2 className="text-3xl md:text-4xl font-bold">
-                  Раскройте истину за делами
+                  Раскройте истину
                 </h2>
                 <p className="text-gray-600 leading-relaxed">
                   Наш проект революционизирует способ анализа судебных решений по уголовным делам в России. 
-                  С помощью современных текстовых технологий мы позволяем пользователям загружать файлы 
-                  решений судов для глубокого анализа. Платформа обрабатывает эти документы в облаке, 
-                  используя продвинутую языковую модель, чтобы извлекать ключевые данные.
+                  Документы обрабатываются в облаке с применением сложной языковой модели (LLM) для извлечения ключевых признаков судебных решений. 
+                  В результате Вы получаете наглядные таблицы, которые предоставляют ценные инсайты, 
+                  что способствует повышению юридической осведомленности и более справедливому судопроизводству в России. 
                 </p>
                 <Link href="#contact" className="inline-block text-gray-600 hover:text-gray-900 underline">
                   Свяжитесь с нами
