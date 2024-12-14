@@ -39,18 +39,23 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
 
     console.log("Instantiating MistralClient...");
     const client = new MistralClient(apiKey);
+
     const questions = [
-      "Пол жертвы?",
-      "Пол обвиняемого?",
-      "Дата преступления?",
-      "Город преступления?",
-      "Оружие?",
+      "Пол жертвы? (ответь только одно слово: мужской или женский, если указано,)",
+      "Пол обвиняемого? (ответь только одно слово: мужской или женский, если указано)",
+      "Дата преступления? (ответь только дату, если указано, без лишних слов)",
+      "Город преступления? (ответь только город, если указано, без лишних слов)",
+      "Оружие? (ответь только название оружия, если указано, без лишних слов)",
     ];
 
-    console.log("Processing questions:", questions);
+    // Create a mapping of displayed questions by removing text in brackets and "?"
+    const displayQuestions = questions.map((q) =>
+      q.replace(/\(.*?\)/g, "").replace(/\?/g, "").trim()
+    );
     const responses: Record<string, string> = {};
 
-    for (const question of questions) {
+    console.log("Processing questions:", questions);
+    for (const [index, question] of questions.entries()) {
       console.log(`Asking question: ${question}`);
       const messages = [
         {
@@ -75,7 +80,8 @@ apiRoute.post(async (req: any, res: NextApiResponse) => {
           throw new Error(`No answer returned for question: ${question}`);
         }
 
-        responses[question] = answer;
+        // Use the cleaned question for the response key
+        responses[displayQuestions[index]] = answer;
       } catch (error) {
         console.error(`Error querying Mistral for question "${question}":`, error.message);
         throw new Error(`Failed to process question: ${question}`);
