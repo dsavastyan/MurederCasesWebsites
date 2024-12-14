@@ -1,3 +1,6 @@
+import Link from "next/link"; // Proper import of Link from next/link
+import { Button } from "@/components/ui/button";
+
 export function SiteHeader() {
   return (
     <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
