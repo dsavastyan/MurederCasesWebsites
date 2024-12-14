@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
 import { useState, useRef } from 'react';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 interface ModelResponse {
   [key: string]: string;
@@ -18,33 +18,6 @@ export function UploadSection() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     setFileName(file ? `File selected: ${file.name}` : 'No file selected');
-    setModelResponse(null);
-    setError(null);
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file) {
-      setFileName(`File selected: ${file.name}`);
-      if (fileInputRef.current) {
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-        fileInputRef.current.files = dataTransfer.files;
-      }
-    } else {
-      setFileName('No file selected');
-    }
-    setIsDragging(false);
     setModelResponse(null);
     setError(null);
   };
@@ -73,15 +46,12 @@ export function UploadSection() {
 
       if (response.ok) {
         setModelResponse(data.modelResponse);
-        alert('File successfully uploaded and processed!');
       } else {
         setError(data.message || 'An error occurred during upload.');
-        alert(data.message || 'An error occurred during upload.');
       }
     } catch (err) {
       console.error('Upload Error:', err);
       setError('An unexpected error occurred.');
-      alert('An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
@@ -89,75 +59,55 @@ export function UploadSection() {
 
   return (
     <div className="container">
-      <div className="max-w-md mx-auto bg-white rounded-2xl p-10 shadow-lg text-center hover:scale-105 transition transform duration-300 ease-in-out hover:shadow-xl">
+      <div className="max-w-md mx-auto bg-white rounded-2xl p-10 shadow-lg text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Upload a File</h2>
-        <form onSubmit={handleSubmit} className="w-full">
-          <label htmlFor="file" className="block text-lg text-gray-700 mb-3">
-            Select a file:
-          </label>
-          
-          <div 
-            className={`bg-gray-100 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all duration-300 ease-in-out ${
-              isDragging 
-                ? 'bg-[#e0f7fa] border-[#8e24aa]' 
-                : 'hover:bg-[#e0f7fa] hover:border-[#8e24aa] border-[#00bcd4]'
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            role="button"
-            tabIndex={0}
-            aria-label="File upload area. Click or drag and drop a file to upload."
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                fileInputRef.current?.click();
-              }
-            }}
-          >
-            <input 
-              type="file" 
-              id="file" 
-              name="file" 
-              required 
+        <form onSubmit={handleSubmit}>
+          <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg">
+            <input
+              type="file"
+              id="file"
+              name="file"
               className="hidden"
               onChange={handleFileChange}
               ref={fileInputRef}
             />
-            <p className="text-gray-600 text-base">{fileName}</p>
+            <p className="text-gray-600">{fileName}</p>
+            <Button onClick={() => fileInputRef.current?.click()} className="mt-4">
+              Choose File
+            </Button>
           </div>
-          
-          <Button 
-            type="button" 
-            className="w-full bg-[#00bcd4] text-white mt-3 hover:bg-[#8e24aa]"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Choose a file from your computer
-          </Button>
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-[#00bcd4] text-white mt-3 hover:bg-[#8e24aa]"
-            disabled={loading}
-          >
+          <Button type="submit" className="mt-4" disabled={loading}>
             {loading ? 'Uploading...' : 'Upload'}
           </Button>
         </form>
 
-        {modelResponse && (
-          <div className="mt-5 p-4 bg-gray-100 rounded-lg text-left">
-            <h3 className="text-xl font-semibold mb-2">Model Response:</h3>
-            <pre className="whitespace-pre-wrap">{JSON.stringify(modelResponse, null, 2)}</pre>
-          </div>
-        )}
-
         {error && (
-          <div className="mt-5 p-4 bg-red-100 rounded-lg text-left">
-            <h3 className="text-xl font-semibold mb-2">Error:</h3>
-            <p>{error}</p>
+          <div className="mt-4 text-red-500">
+            <p>Error: {error}</p>
           </div>
         )}
 
-        <div className="mt-5 text-sm text-gray-500">© 2024 Your Website</div>
+        {modelResponse && (
+          <div className="mt-6">
+            <h3 className="text-xl font-semibold">Analysis Results</h3>
+            <table className="table-auto border-collapse border border-gray-300 mt-4 w-full">
+              <thead>
+                <tr>
+                  <th className="border border-gray-300 px-4 py-2 bg-gray-100">Question</th>
+                  <th className="border border-gray-300 px-4 py-2 bg-gray-100">Answer</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(modelResponse).map(([question, answer]) => (
+                  <tr key={question}>
+                    <td className="border border-gray-300 px-4 py-2">{question}</td>
+                    <td className="border border-gray-300 px-4 py-2">{answer}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
